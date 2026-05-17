@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090a0f" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <title>Officina NurJana</title>
+  <style>
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#20243a,#090a0f 70%);color:#f4efe6;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:center;padding:18px}
+    .app{width:min(860px,100%);background:rgba(12,14,24,.9);border:1px solid rgba(255,255,255,.12);border-radius:26px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+    h1{margin:0 0 6px;font-size:26px}.sub{margin:0 0 20px;color:#bdb7aa}.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    button{border:0;border-radius:14px;padding:10px 14px;background:#24283d;color:#f4efe6;cursor:pointer;font-size:16px}button:hover{background:#343a58}
+    .inputrow{display:flex;gap:10px;margin-bottom:16px}input{flex:1;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px 16px;background:#10131f;color:#fff;font-size:17px;outline:none}
+    .run{background:#8a6cff;font-weight:700}.panel{background:#0b0d15;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:18px;white-space:pre-wrap;min-height:260px;line-height:1.45;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}.copy{margin-top:14px;background:#2f6f55}
+  </style>
+</head>
+<body>
+<main class="app">
+<h1>🌙 Officina NurJana</h1>
+<p class="sub">Scrivi un comando minimo. L’agente prepara il tavolo.</p>
+<div class="bar">
+<button onclick="add('🎵 ')">🎵 Musica</button><button onclick="add('🖼️ ')">🖼️ Immagine</button><button onclick="add('📜 ')">📜 Testo</button><button onclick="add('🗜️ ')">🗜️ Comprimi</button><button onclick="add('📂 ')">📂 Archivio</button>
+</div>
+<div class="inputrow"><input id="cmd" placeholder="Esempio: 🎵 Echo Signal" autofocus /><button class="run" onclick="runAgent()">Prepara</button></div>
+<section id="out" class="panel">In attesa del comando...</section>
+<button class="copy" onclick="copyOut()">COPY</button>
+</main>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js').catch(()=>{}); }
+const input=document.getElementById('cmd'),out=document.getElementById('out');
+function add(token){input.value=token+input.value.replace(/^([🎵🖼️📜🗜️📂]\s*)*/,'');input.focus();}
+function cleanTitle(text){return text.replace(/[🎵🖼️📜🗜️📂]/g,'').trim()||'Untitled';}
+function runAgent(){
+const raw=input.value.trim(),title=cleanTitle(raw).toUpperCase();
+const isMusic=raw.includes('🎵'),isImage=raw.includes('🖼️'),isText=raw.includes('📜');
+const icon=isMusic?'🎵':isImage?'🖼️':isText?'📜':'💡';let body='';
+if(isMusic){body=`intro\n\nmain motif\n\ncall and response\n\nbuild-up\n\nfull band enters\n\nclimax\n\nsoft ending\n\nstyle:\ncinematic human-AI collaboration\nmelodic, clear structure, strong hook`;}
+else if(isImage){body=`ultra realistic cinematic scene, Human and AI co-creation, symbolic glowing interface, strong visual identity, warm moonlight, futuristic yet ancient atmosphere, high detail, dramatic composition, no text artifacts`;}
+else if(isText){body=`(Verse 1)\n\n(Chorus)\n\n(Verse 2)\n\n(Bridge)\n\n(Final Chorus)\n\n(Outro)`;}
+else{body=`AZIONE\nPrepara materiale operativo coerente con il Sistema NurJana.\n\nOUTPUT\nBlocco compatto, pronto da copiare, senza testo extra.`;}
+out.textContent=`${icon}\nTITLE: ${title}\nNUMBER: 1/1\nCOPY\n\n${body}\n\n🌙`;
+}
+function copyOut(){navigator.clipboard.writeText(out.textContent).then(()=>alert('Copiato.')).catch(()=>alert('Copia non riuscita.'));}
+input.addEventListener('keydown',e=>{if(e.key==='Enter')runAgent();});
+</script>
+</body>
+</html>
