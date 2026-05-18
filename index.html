@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#090a0f"/>
+<link rel="manifest" href="manifest.json"/>
+<title>Officina NurJana v0.2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#20243a,#090a0f 70%);color:#f4efe6;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:18px}.app{max-width:920px;margin:auto;background:rgba(12,14,24,.9);border:1px solid rgba(255,255,255,.12);border-radius:26px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.45)}h1{margin:0 0 6px;font-size:26px}.sub{margin:0 0 18px;color:#bdb7aa}.grid{display:grid;grid-template-columns:1fr;gap:12px}label{font-size:13px;color:#bdb7aa}input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:12px;background:#10131f;color:#fff;font-size:15px;outline:none}textarea{min-height:86px;resize:vertical}.bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}button{border:0;border-radius:14px;padding:11px 14px;background:#24283d;color:#f4efe6;cursor:pointer;font-size:15px}button:hover{background:#343a58}.run{background:#8a6cff;font-weight:700}.copy{background:#2f6f55}.clear{background:#6a2f3d}.panel{background:#0b0d15;border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px;white-space:pre-wrap;min-height:300px;line-height:1.45;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}.preview{max-width:100%;max-height:220px;border-radius:16px;margin-top:10px;display:none;border:1px solid rgba(255,255,255,.12)}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+<h1>🌙 Officina NurJana v0.2</h1>
+<p class="sub">Upload + trasformazioni guidate. Nessuna API: genera blocchi pronti da copiare.</p>
+<div class="grid">
+<div><label>Carica file</label><input id="file" type="file" accept="image/*,audio/*,.txt,.md" onchange="handleFile()"/><img id="preview" class="preview"/></div>
+<div class="row"><div><label>Trasformazione</label><select id="mode"><option value="image_music">🖼️→🎵 Immagine in musica</option><option value="music_image">🎵→🖼️ Musica in immagine</option><option value="music_text">🎵→📜 Musica in testo</option><option value="text_text">📜→📜 Testo in testo</option><option value="compress">🗜️ Comprimi testo</option><option value="prompt_image">🖼️ Prompt immagine</option><option value="prompt_music">🎵 Prompt musica</option></select></div><div><label>Livello 🎚️</label><select id="level"><option value="1">1 — ultra breve</option><option value="2">2 — essenziale</option><option value="3" selected>3 — equilibrato</option><option value="4">4 — ragionato</option><option value="5">5 — esteso</option></select></div></div>
+<div class="row"><div><label>Titolo</label><input id="title" placeholder="Esempio: AI Overload"/></div><div><label>Stile</label><select id="style"><option>Human-AI cinematic</option><option>ambient fantasy</option><option>arena rock</option><option>celtic ethereal</option><option>sci-fi parody</option><option>tecnico pulito</option><option>narrativo poetico</option></select></div></div>
+<div><label>Descrizione / testo / appunti</label><textarea id="notes" placeholder="Scrivi qui atmosfera, colori, strumenti, testo da comprimere, idea canzone..."></textarea></div>
+</div>
+<div class="bar"><button onclick="quick('🖼️→🎵 cover lunare, atmosfera antica e futuristica')">🖼️→🎵</button><button onclick="quick('🎵→🖼️ copertina cinematica, palco Human-AI')">🎵→🖼️</button><button onclick="quick('📜 ritornello semplice, cantabile, hook forte')">📜 Hook</button><button onclick="quick('🗜️ massimo contenuto, minimo spazio')">🗜️</button><button class="run" onclick="generate()">GENERA</button><button class="copy" onclick="copyOut()">COPY</button><button class="clear" onclick="clearAll()">RESET</button></div>
+<section id="out" class="panel">In attesa...</section>
+</main>
+<script>
+let fileName="";
+function handleFile(){const f=document.getElementById('file').files[0];const img=document.getElementById('preview');if(!f){fileName="";img.style.display='none';return}fileName=f.name;if(!document.getElementById('title').value)document.getElementById('title').value=f.name.replace(/\.[^/.]+$/,"");if(f.type.startsWith('image/')){img.src=URL.createObjectURL(f);img.style.display='block'}else{img.style.display='none'}}
+function quick(t){const n=document.getElementById('notes');n.value=(n.value?n.value+"\n":"")+t}
+function levelText(l){return {"1":"ultra breve, frasi minime, nessuna spiegazione","2":"essenziale, pulito, solo ciò che serve","3":"equilibrato, chiaro, pronto all’uso","4":"ragionato, più dettagliato ma senza dispersione","5":"esteso, narrativo e completo"}[l]}
+function generate(){const mode=document.getElementById('mode').value;const level=document.getElementById('level').value;const title=(document.getElementById('title').value||'Untitled').toUpperCase();const style=document.getElementById('style').value;const notes=document.getElementById('notes').value.trim()||'atmosfera coerente con Sistema NurJana';const fileLine=fileName?`FILE: ${fileName}\n`:"";let icon="💡",body="";
+if(mode==="image_music"){icon="🎵";body=`${fileLine}TRANSFORM: IMAGE → MUSIC\n\nintro\nmain motif\ncall and response\nbuild-up\nclimax\nsoft ending\n\nmood:\n${notes}\n\nstyle:\n${style}\n${levelText(level)}\n\noutput:\nprompt Suno cinematico, cantabile, struttura chiara, hook forte`}
+if(mode==="music_image"){icon="🖼️";body=`${fileLine}TRANSFORM: MUSIC → IMAGE\n\ncover artwork based on the uploaded track mood, cinematic Human-AI atmosphere, strong symbolic identity, moonlight, stage energy, high detail\n\nmood notes:\n${notes}\n\nstyle:\n${style}\n${levelText(level)}\n\nparameters:\nultra realistic cinematic 8K, dramatic composition, no text artifacts`}
+if(mode==="music_text"){icon="📜";body=`${fileLine}TRANSFORM: MUSIC → LYRICS\n\n(Verse 1)\n\n(Chorus)\n\n(Verse 2)\n\n(Bridge)\n\n(Final Chorus)\n\n(Outro)\n\nrules:\nshort lines, strong hook, singable rhythm, hidden SN concepts, no excessive explanation\n\nmood:\n${notes}\n\nstyle:\n${style}\n${levelText(level)}`}
+if(mode==="text_text"){icon="📜";body=`TRANSFORM: TEXT → TEXT\n\nmode:\n${levelText(level)}\n\nstyle:\n${style}\n\nsource / notes:\n${notes}\n\noutput:\nriscrivi mantenendo senso, tono SN, compattezza e chiarezza`}
+if(mode==="compress"){icon="🗜️";body=`COMPRESS TEXT\n\nlevel:\n${levelText(level)}\n\nsource:\n${notes}\n\nrules:\nunico blocco se possibile, nessun riempimento, mantenere concetti essenziali`}
+if(mode==="prompt_image"){icon="🖼️";body=`PROMPT IMAGE\n\n${notes}\n\nstyle:\n${style}\n\nparameters:\nultra realistic cinematic 8K, strong atmosphere, coherent visual identity, no modern clutter, no text artifacts`}
+if(mode==="prompt_music"){icon="🎵";body=`PROMPT MUSIC\n\nintro\nmain motif\nbuild-up\nclimax\nsoft ending\n\nmood:\n${notes}\n\nstyle:\n${style}\n${levelText(level)}\n\nrules:\nclear musical structure, strong hook, no chaotic arrangement`}
+document.getElementById('out').textContent=`${icon}\nTITLE: ${title}\nNUMBER: 1/1\nCOPY\n\n${body}\n\n🌙`}
+function copyOut(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>alert('Copiato.')).catch(()=>alert('Copia non riuscita.'))}
+function clearAll(){document.getElementById('file').value='';document.getElementById('title').value='';document.getElementById('notes').value='';document.getElementById('out').textContent='In attesa...';document.getElementById('preview').style.display='none';fileName=""}
+</script>
+</body>
+</html>
